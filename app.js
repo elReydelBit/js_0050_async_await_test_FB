@@ -151,25 +151,106 @@ parallelAPICalls().then(results => console.log('Results:', results));
 // https://jsonplaceholder.typicode.com/todos/n siendo n = 1,2,3,4
 export async function fetchSequentially(urls) {
   
-}
+  //creamos un array para almacenar los datos obtenidos
+  const results = [];
 
+  try {
+    for (const url of urls) {
+      //Realizamos la solicitud HTTP a la URL proporcionada y esperamos la respuesta
+      const response = await fetch(url);
+
+      //Convertimos la respuesta en un objeto JSON y esperamos que se resuelva
+      const data = await response.json();
+
+      //Almacenamos los datos obtenidos en el array results
+      results.push(data);
+    }  
+
+
+  } catch (error) {
+    //Controlamos cualquier error al manejar los datos
+    console.error('Error al manejar los datos', error);
+  }
+
+  //Devolvemos los datos obtenidos
+  return results;
+
+}
+// Crear el array de URLs para el ejercicio
+const urls = [
+  'https://jsonplaceholder.typicode.com/todos/1',
+  'https://jsonplaceholder.typicode.com/todos/2',
+  'https://jsonplaceholder.typicode.com/todos/3',
+  'https://jsonplaceholder.typicode.com/todos/4'
+];
+
+// Llamada a la función y registro de los resultados
+fetchSequentially(urls).then(results => console.log('Results:', results));
 
 //6. Async/Await with Array Methods
 // Create an async function that uses Promis//e.all to fetch data from multiple URLs 
 // stored in an array and logs all responses at onc//e// .
 // urls = ['https://jsonplaceholder.typicode.com/todos/1', 'https://jsonplaceholder.typicode.com/todos/2']
 export async function fetchAll(urls) {
-  
+  try {
+    // Usa Promise.all para realizar todas las solicitudes en paralelo
+    const responses = await Promise.all(urls.map(url => fetch(url)));
+    
+    // Convierte todas las respuestas en JSON
+    const data = await Promise.all(responses.map(response => response.json()));
+    
+    // Registra todas las respuestas en la consola
+    console.log('All data:', data);
+    
+    // Devuelve los datos obtenidos
+    return data;
+  } catch (error) {
+    // Controla cualquier error que ocurra durante las solicitudes
+    console.error('Error fetching data:', error);
+    return error;
+  }
 }
 
+// Crear el array de URLs para el ejercicio
+const urls2 = [
+  'https://jsonplaceholder.typicode.com/todos/1',
+  'https://jsonplaceholder.typicode.com/todos/2'
+];
+
+// Llamada a la función y registro de los resultados
+fetchAll(urls2).then(results => console.log('Results:', results));
 
 
 //7. Async/Await with Conditional Logic
-// W rite an async function that makes an API call and performs different actions based on the status code of the respons//e// .
+// Write an async function that makes an API call and performs different actions based on the status code of the respons//e// .
 // https://jsonplaceholder.typicode.com/todos/1
 export async function handleResponse(url) {
-  
+  try {
+    // Realiza la solicitud HTTP a la URL proporcionada
+    const response = await fetch(url);
+    
+    // Verifica el código de estado de la respuesta
+    if (response.status === 200) {
+      // Si el código de estado es 200 (OK), convierte la respuesta en JSON
+      const data = await response.json();
+      // Realiza una acción con los datos obtenidos
+      console.log('Datos obtenidos:', data);
+    } else if (response.status === 404) {
+      // Si el código de estado es 404 (Not Found), registra un mensaje de error específico
+      console.error('Error 404: Recurso no encontrado');
+    } else {
+      // Maneja otros códigos de estado según sea necesario
+      console.error(`Error ${response.status}: ${response.statusText}`);
+    }
+  } catch (error) {
+    // Captura y maneja cualquier error que ocurra durante la solicitud
+    console.error('Error al realizar la solicitud:', error);
+  }
 }
+
+// Llamada a la función y registro de los resultados
+handleResponse('https://jsonplaceholder.typicode.com/todos/1');
+
 // 8. Async/Await with File Operations (Node.js)
 // If you’re using Node.js, write an async function that reads a file, processes its contents, 
 // and writes the result to a new file, using await to handle the asynchronous file operations.
